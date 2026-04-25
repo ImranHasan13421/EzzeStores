@@ -59,33 +59,26 @@ class PosService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 4. Manually Adjust Quantity (+ / - buttons)
-  String? updateQuantity(String barcode, int change) {
+  /// 3. Set Exact Quantity (Typed by user via the number field)
+  String? setQuantity(String barcode, int newQuantity) {
     final index = cart.indexWhere((item) => item.barcode == barcode);
 
     if (index >= 0) {
-      final newQuantity = cart[index].quantity + change;
-
-      // If it drops to 0, just remove it from the cart entirely
       if (newQuantity <= 0) {
         removeItem(barcode);
-        return null; // Success
-      }
-      // If we still have enough stock to allow the increase
-      else if (newQuantity <= cart[index].maxStock) {
+        return null;
+      } else if (newQuantity <= cart[index].maxStock) {
         cart[index].quantity = newQuantity;
         notifyListeners();
-        return null; // Success
-      }
-      // User tapped '+' but the shelf is empty!
-      else {
-        return "Cannot add more. Max stock reached!";
+        return null;
+      } else {
+        return "Only ${cart[index].maxStock} in stock!";
       }
     }
     return null;
   }
 
-  /// 3. Process Checkout
+  /// 4. Process Checkout
   Future<bool> checkout() async {
     if (cart.isEmpty) return false;
 

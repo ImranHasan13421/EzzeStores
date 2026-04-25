@@ -1,3 +1,4 @@
+import 'package:ezze_stores/features/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -16,6 +17,7 @@ import 'features/dashboard/dashboard_service.dart';
 // --- Screens ---
 import 'features/auth/login_screen.dart';
 import 'features/dashboard/dashboard_screen.dart';
+import 'features/splash/splash_screen.dart';
 
 void main() async {
   // 1. Ensure Flutter engine is fully ready before running background tasks
@@ -87,7 +89,7 @@ class EzzeStoresApp extends StatelessWidget {
               builder: (context, auth, child) {
                 // If currentUser is NOT null, they are logged in!
                 if (auth.currentUser != null) {
-                  return const DashboardScreen();
+                  return const SplashScreen();
                 }
                 // Otherwise, show them the login gate.
                 return const LoginScreen();

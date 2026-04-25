@@ -47,36 +47,38 @@ class PosScreen extends StatelessWidget {
                           ),
                         ),
 
-                        // Middle: The Quantity Adjuster Widget
+                        // Middle: ONLY The Number Input Field
                         Container(
+                          height: 40,
+                          width: 60, // Gives the input box a nice square shape
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey.withOpacity(0.3)),
                             borderRadius: BorderRadius.circular(8),
+                            // Adds a very subtle color so the user knows they can tap it
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
                           ),
-                          child: Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.remove),
-                                constraints: const BoxConstraints(),
-                                padding: const EdgeInsets.all(8),
-                                color: Theme.of(context).colorScheme.primary,
-                                onPressed: () => service.updateQuantity(item.barcode, -1),
+                          child: Center(
+                            child: TextFormField(
+                              initialValue: '${item.quantity}',
+                              keyboardType: TextInputType.number,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                isDense: true, // Helps vertically center the text
+                                contentPadding: EdgeInsets.zero,
                               ),
-                              Text('${item.quantity}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                              IconButton(
-                                icon: const Icon(Icons.add),
-                                constraints: const BoxConstraints(),
-                                padding: const EdgeInsets.all(8),
-                                color: Theme.of(context).colorScheme.primary,
-                                onPressed: () {
-                                  final error = service.updateQuantity(item.barcode, 1);
-                                  // Show an error if they try to buy more than we have!
+                              // Update the database only when they hit "Done/Enter" on the keyboard
+                              onFieldSubmitted: (value) {
+                                final newQty = int.tryParse(value);
+                                if (newQty != null) {
+                                  final error = context.read<PosService>().setQuantity(item.barcode, newQty);
                                   if (error != null && context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error), backgroundColor: Colors.redAccent));
                                   }
-                                },
-                              ),
-                            ],
+                                }
+                              },
+                            ),
                           ),
                         ),
 
