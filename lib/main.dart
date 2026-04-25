@@ -4,6 +4,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'core/database/supabase_config.dart';
 import 'features/inventory/inventory_service.dart';
 import 'features/inventory/inventory_screen.dart';
+import 'features/pos_sales/pos_service.dart';
+import 'features/purchases/purchase_service.dart';
+import 'features/dashboard/dashboard_service.dart';
+import 'features/dashboard/dashboard_screen.dart';
 
 
 void main() async {
@@ -25,8 +29,10 @@ class EzzeStoresApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // Inject the Inventory Service here!
         ChangeNotifierProvider(create: (_) => InventoryService()),
+        ChangeNotifierProvider(create: (_) => PosService()),
+        ChangeNotifierProvider(create: (_) => PurchaseService()),
+        ChangeNotifierProvider(create: (_) => DashboardService()), // <-- Add this!
       ],
       child: MaterialApp(
         title: 'EzzeStores',
@@ -35,8 +41,8 @@ class EzzeStoresApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
           useMaterial3: true,
         ),
-        // Set the InventoryScreen as the home screen!
-        home: const InventoryScreen(),
+        // Change the home screen to the Dashboard!
+        home: const DashboardScreen(),
       ),
     );
   }

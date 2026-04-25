@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'inventory_service.dart';
 import 'add_item_screen.dart';
+import '../pos_sales/pos_screen.dart';
+import '../purchases/purchase_screen.dart';
 
 class InventoryScreen extends StatelessWidget {
   const InventoryScreen({super.key});
@@ -12,6 +14,24 @@ class InventoryScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Inventory'),
         centerTitle: true,
+        actions: [
+          // New Restock Button
+          IconButton(
+            icon: const Icon(Icons.local_shipping),
+            tooltip: 'Restock',
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const PurchaseScreen()));
+            },
+          ),
+          // Existing POS Button
+          IconButton(
+            icon: const Icon(Icons.point_of_sale),
+            tooltip: 'Go to Checkout',
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const PosScreen()));
+            },
+          )
+        ],
       ),
       body: Consumer<InventoryService>(
         builder: (context, service, child) {

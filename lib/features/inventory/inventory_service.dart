@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/database/supabase_config.dart';
 import 'item_model.dart';
 
+
 class InventoryService extends ChangeNotifier {
   final _db = SupabaseConfig.client;
 
