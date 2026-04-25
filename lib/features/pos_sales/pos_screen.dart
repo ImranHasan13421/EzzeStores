@@ -24,18 +24,79 @@ class PosScreen extends StatelessWidget {
             itemCount: service.cart.length,
             itemBuilder: (context, index) {
               final item = service.cart[index];
-              return ListTile(
-                title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text('Qty: ${item.quantity}  |  \$${item.price.toStringAsFixed(2)} each'),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('\$${item.totalPrice.toStringAsFixed(2)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                      onPressed: () => service.removeItem(item.barcode),
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                child: Card(
+                  color: Theme.of(context).cardColor,
+                  elevation: isDark ? 1 : 0.5,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Left Side: Name and Price
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                              const SizedBox(height: 4),
+                              Text('\$${item.price.toStringAsFixed(2)} each',
+                                  style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
+                            ],
+                          ),
+                        ),
+
+                        // Middle: The Quantity Adjuster Widget
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.remove),
+                                constraints: const BoxConstraints(),
+                                padding: const EdgeInsets.all(8),
+                                color: Theme.of(context).colorScheme.primary,
+                                onPressed: () => service.updateQuantity(item.barcode, -1),
+                              ),
+                              Text('${item.quantity}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                              IconButton(
+                                icon: const Icon(Icons.add),
+                                constraints: const BoxConstraints(),
+                                padding: const EdgeInsets.all(8),
+                                color: Theme.of(context).colorScheme.primary,
+                                onPressed: () {
+                                  final error = service.updateQuantity(item.barcode, 1);
+                                  // Show an error if they try to buy more than we have!
+                                  if (error != null && context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error), backgroundColor: Colors.redAccent));
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Right Side: Total Price and Delete Button
+                        const SizedBox(width: 16),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text('\$${item.totalPrice.toStringAsFixed(2)}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                              constraints: const BoxConstraints(),
+                              padding: const EdgeInsets.only(top: 8),
+                              onPressed: () => service.removeItem(item.barcode),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               );
             },
@@ -47,7 +108,6 @@ class PosScreen extends StatelessWidget {
           return Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              // Theme responsive bottom bar!
               color: Theme.of(context).cardColor,
               boxShadow: [
                 BoxShadow(
