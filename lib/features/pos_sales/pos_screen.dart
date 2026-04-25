@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'pos_service.dart';
 import '../scanner/barcode_scanner.dart';
+import '../../shared_widgets/app_drawer.dart';
 
 class PosScreen extends StatelessWidget {
   const PosScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Checkout Cart')),
+      drawer: const AppDrawer(),
+      appBar: AppBar(title: const Text('Checkout Cart', style: TextStyle(fontWeight: FontWeight.bold))),
       body: Consumer<PosService>(
         builder: (context, service, child) {
           if (service.cart.isEmpty) {
@@ -22,13 +26,13 @@ class PosScreen extends StatelessWidget {
               final item = service.cart[index];
               return ListTile(
                 title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text('Qty: ${item.quantity}  |  \Tk ${item.price.toStringAsFixed(2)} each'),
+                subtitle: Text('Qty: ${item.quantity}  |  \$${item.price.toStringAsFixed(2)} each'),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('\Tk ${item.totalPrice.toStringAsFixed(2)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text('\$${item.totalPrice.toStringAsFixed(2)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Colors.red),
+                      icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                       onPressed: () => service.removeItem(item.barcode),
                     ),
                   ],
@@ -42,9 +46,16 @@ class PosScreen extends StatelessWidget {
         builder: (context, service, child) {
           return Container(
             padding: const EdgeInsets.all(20),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, -2))],
+            decoration: BoxDecoration(
+              // Theme responsive bottom bar!
+              color: Theme.of(context).cardColor,
+              boxShadow: [
+                BoxShadow(
+                    color: isDark ? Colors.black45 : Colors.black12,
+                    blurRadius: 10,
+                    offset: const Offset(0, -2)
+                )
+              ],
             ),
             child: SafeArea(
               child: Column(
@@ -54,14 +65,13 @@ class PosScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Total:', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                      Text('\Tk ${service.cartTotal.toStringAsFixed(2)}',
+                      Text('\$${service.cartTotal.toStringAsFixed(2)}',
                           style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.green)),
                     ],
                   ),
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      // SCAN BUTTON
                       Expanded(
                         flex: 1,
                         child: OutlinedButton.icon(
@@ -69,28 +79,23 @@ class PosScreen extends StatelessWidget {
                           icon: const Icon(Icons.qr_code_scanner),
                           label: const Text('Scan'),
                           onPressed: service.isProcessing ? null : () async {
-                            final scannedCode = await Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const BarcodeScanner()),
-                            );
-
+                            final scannedCode = await Navigator.push(context, MaterialPageRoute(builder: (_) => const BarcodeScanner()));
                             if (scannedCode != null && context.mounted) {
                               final error = await context.read<PosService>().scanItemToCart(scannedCode);
                               if (error != null) {
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error), backgroundColor: Colors.red));
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error), backgroundColor: Colors.redAccent));
                               }
                             }
                           },
                         ),
                       ),
                       const SizedBox(width: 16),
-                      // CHECKOUT BUTTON
                       Expanded(
                         flex: 2,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blueAccent,
-                            foregroundColor: Colors.white,
+                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            foregroundColor: Theme.of(context).colorScheme.onPrimary,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                           ),
                           onPressed: service.cart.isEmpty || service.isProcessing ? null : () async {
@@ -100,7 +105,7 @@ class PosScreen extends StatelessWidget {
                             }
                           },
                           child: service.isProcessing
-                              ? const CircularProgressIndicator(color: Colors.white)
+                              ? CircularProgressIndicator(color: Theme.of(context).colorScheme.onPrimary)
                               : const Text('Checkout', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                         ),
                       ),

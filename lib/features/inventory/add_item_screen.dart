@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'inventory_service.dart';
 import 'item_model.dart';
-import '../scanner/barcode_scanner.dart'; // Import your scanner!
+import '../scanner/barcode_scanner.dart';
 
 class AddItemScreen extends StatefulWidget {
   const AddItemScreen({super.key});
@@ -13,14 +13,11 @@ class AddItemScreen extends StatefulWidget {
 
 class _AddItemScreenState extends State<AddItemScreen> {
   final _formKey = GlobalKey<FormState>();
-
-  // Controllers to read the text typed by the user
   final _barcodeController = TextEditingController();
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
-  final _stockController = TextEditingController(text: '0'); // Default to 0
-  final _minStockController = TextEditingController(text: '5'); // Default to 5
-
+  final _stockController = TextEditingController(text: '0');
+  final _minStockController = TextEditingController(text: '5');
   bool _isSaving = false;
 
   @override
@@ -34,13 +31,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
   }
 
   Future<void> _saveItem() async {
-    // 1. Validate the form (checks if required fields are filled)
     if (!_formKey.currentState!.validate()) return;
-
     setState(() => _isSaving = true);
-
     try {
-      // 2. Build the Model from the text fields
       final newItem = ItemModel(
         barcode: _barcodeController.text.trim(),
         name: _nameController.text.trim(),
@@ -48,22 +41,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
         currentStock: int.parse(_stockController.text.trim()),
         minStockLevel: int.parse(_minStockController.text.trim()),
       );
-
-      // 3. Ask the Service to save it to Supabase
       await context.read<InventoryService>().addItem(newItem);
-
-      // 4. Show success and go back to the previous screen
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Item added successfully!')),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Item added successfully!')));
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -79,16 +64,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16.0),
           children: [
-            // BARCODE ROW (Text Field + Scanner Button)
             Row(
               children: [
                 Expanded(
                   child: TextFormField(
                     controller: _barcodeController,
-                    decoration: const InputDecoration(
-                      labelText: 'Barcode',
-                      border: OutlineInputBorder(),
-                    ),
+                    decoration: const InputDecoration(labelText: 'Barcode', border: OutlineInputBorder()),
                     validator: (val) => val == null || val.isEmpty ? 'Required' : null,
                   ),
                 ),
@@ -97,40 +78,26 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   icon: const Icon(Icons.qr_code_scanner),
                   iconSize: 32,
                   onPressed: () async {
-                    // Open the scanner!
-                    final scannedCode = await Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const BarcodeScanner()),
-                    );
-
-                    // If the user scanned something, put it in the text field
-                    if (scannedCode != null) {
-                      _barcodeController.text = scannedCode;
-                    }
+                    final scannedCode = await Navigator.push(context, MaterialPageRoute(builder: (_) => const BarcodeScanner()));
+                    if (scannedCode != null) _barcodeController.text = scannedCode;
                   },
                 ),
               ],
             ),
             const SizedBox(height: 16),
-
-            // ITEM NAME
             TextFormField(
               controller: _nameController,
               decoration: const InputDecoration(labelText: 'Item Name', border: OutlineInputBorder()),
               validator: (val) => val == null || val.isEmpty ? 'Required' : null,
             ),
             const SizedBox(height: 16),
-
-            // SELLING PRICE
             TextFormField(
               controller: _priceController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(labelText: 'Selling Price (\Tk)', border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: 'Selling Price (\$)', border: OutlineInputBorder()),
               validator: (val) => val == null || val.isEmpty ? 'Required' : null,
             ),
             const SizedBox(height: 16),
-
-            // STOCK LEVELS (Row)
             Row(
               children: [
                 Expanded(
@@ -151,17 +118,16 @@ class _AddItemScreenState extends State<AddItemScreen> {
               ],
             ),
             const SizedBox(height: 32),
-
-            // SAVE BUTTON
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: Colors.blueAccent,
-                foregroundColor: Colors.white,
+                // Let the theme dictate the primary button colors
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
               ),
               onPressed: _isSaving ? null : _saveItem,
               child: _isSaving
-                  ? const CircularProgressIndicator(color: Colors.white)
+                  ? CircularProgressIndicator(color: Theme.of(context).colorScheme.onPrimary)
                   : const Text('Save Item', style: TextStyle(fontSize: 18)),
             ),
           ],

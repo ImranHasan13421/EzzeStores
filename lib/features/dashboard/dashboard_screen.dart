@@ -4,6 +4,7 @@ import 'dashboard_service.dart';
 import '../inventory/inventory_screen.dart';
 import '../pos_sales/pos_screen.dart';
 import '../purchases/purchase_screen.dart';
+import '../../shared_widgets/app_drawer.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -11,11 +12,11 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      // Notice: No hardcoded background color here! The theme handles it.
+      drawer: const AppDrawer(),
       appBar: AppBar(
         title: const Text('EzzeStores Dashboard', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.blueAccent,
-        foregroundColor: Colors.white,
+        // Notice: We removed the hardcoded AppBar colors because main.dart handles them!
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -35,7 +36,6 @@ class DashboardScreen extends StatelessWidget {
               const Text('Business Overview', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
 
-              // --- STATS GRID ---
               GridView.count(
                 crossAxisCount: 2,
                 crossAxisSpacing: 16,
@@ -44,8 +44,8 @@ class DashboardScreen extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 childAspectRatio: 1.3,
                 children: [
-                  _StatCard(title: 'Total Sales', value: '\Tk ${service.totalSales.toStringAsFixed(2)}', icon: Icons.attach_money, color: Colors.green),
-                  _StatCard(title: 'Supplier Dues', value: '\Tk ${service.supplierDues.toStringAsFixed(2)}', icon: Icons.money_off, color: Colors.redAccent),
+                  _StatCard(title: 'Total Sales', value: '\$${service.totalSales.toStringAsFixed(2)}', icon: Icons.attach_money, color: Colors.green),
+                  _StatCard(title: 'Supplier Dues', value: '\$${service.supplierDues.toStringAsFixed(2)}', icon: Icons.money_off, color: Colors.redAccent),
                   _StatCard(title: 'Total Items', value: service.totalItemsInInventory.toString(), icon: Icons.inventory_2, color: Colors.blue),
                   _StatCard(title: 'Low Stock Alerts', value: service.lowStockCount.toString(), icon: Icons.warning_amber_rounded, color: Colors.orange),
                 ],
@@ -55,7 +55,6 @@ class DashboardScreen extends StatelessWidget {
               const Text('Quick Actions', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
 
-              // --- NAVIGATION BUTTONS ---
               _ActionButton(
                 title: 'New Sale (POS)',
                 icon: Icons.point_of_sale,
@@ -96,16 +95,30 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // We grab the current theme to know if we are in dark or light mode
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)]),
+      decoration: BoxDecoration(
+        // Use the theme's card color instead of hardcoded white!
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+                color: isDark ? Colors.black26 : Colors.black.withOpacity(0.05),
+                blurRadius: 10
+            )
+          ]
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, color: color, size: 32),
           const Spacer(),
-          Text(title, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
+          // Use theme text styles instead of hardcoded grey
+          Text(title, style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 14)),
           Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
         ],
       ),
@@ -128,14 +141,23 @@ class _ActionButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: color.withOpacity(0.3))),
+        decoration: BoxDecoration(
+          // Use the theme's card color here too!
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: color.withOpacity(0.3))
+        ),
         child: Row(
           children: [
-            Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle), child: Icon(icon, color: color)),
+            Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
+                child: Icon(icon, color: color)
+            ),
             const SizedBox(width: 16),
             Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             const Spacer(),
-            const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
+            Icon(Icons.arrow_forward_ios, color: Theme.of(context).iconTheme.color?.withOpacity(0.5), size: 16),
           ],
         ),
       ),

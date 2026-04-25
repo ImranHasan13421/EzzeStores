@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'inventory_service.dart';
 import 'add_item_screen.dart';
-import '../pos_sales/pos_screen.dart';
-import '../purchases/purchase_screen.dart';
+import '../../shared_widgets/app_drawer.dart'; // <-- Added Drawer Import
 
 class InventoryScreen extends StatelessWidget {
   const InventoryScreen({super.key});
@@ -11,27 +10,9 @@ class InventoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const AppDrawer(), // <-- Added Drawer
       appBar: AppBar(
-        title: const Text('Inventory'),
-        centerTitle: true,
-        actions: [
-          // New Restock Button
-          IconButton(
-            icon: const Icon(Icons.local_shipping),
-            tooltip: 'Restock',
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const PurchaseScreen()));
-            },
-          ),
-          // Existing POS Button
-          IconButton(
-            icon: const Icon(Icons.point_of_sale),
-            tooltip: 'Go to Checkout',
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const PosScreen()));
-            },
-          )
-        ],
+        title: const Text('Inventory', style: TextStyle(fontWeight: FontWeight.bold)),
       ),
       body: Consumer<InventoryService>(
         builder: (context, service, child) {
@@ -50,7 +31,10 @@ class InventoryScreen extends StatelessWidget {
               final needsRestock = item.currentStock <= item.minStockLevel;
 
               return ListTile(
-                leading: const CircleAvatar(child: Icon(Icons.inventory_2)),
+                leading: CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                  child: Icon(Icons.inventory_2, color: Theme.of(context).colorScheme.primary),
+                ),
                 title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text('Barcode: ${item.barcode} | Price: \$${item.sellingPrice.toStringAsFixed(2)}'),
                 trailing: Column(
@@ -61,11 +45,12 @@ class InventoryScreen extends StatelessWidget {
                       'Stock: ${item.currentStock}',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: needsRestock ? Colors.red : Colors.green,
+                        // Semantic colors like red/green work in both themes
+                        color: needsRestock ? Colors.redAccent : Colors.green,
                       ),
                     ),
                     if (needsRestock)
-                      const Text('Low Stock!', style: TextStyle(color: Colors.red, fontSize: 10)),
+                      const Text('Low Stock!', style: TextStyle(color: Colors.redAccent, fontSize: 10)),
                   ],
                 ),
               );
@@ -77,7 +62,6 @@ class InventoryScreen extends StatelessWidget {
         icon: const Icon(Icons.add),
         label: const Text('Add Item'),
         onPressed: () {
-          // Navigate to the new form!
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const AddItemScreen()),
