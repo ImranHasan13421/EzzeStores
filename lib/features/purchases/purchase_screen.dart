@@ -84,7 +84,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                 TextFormField(
                   controller: _costController,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Total Cost Bill (\$)', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(labelText: 'Total Cost Bill (\Tk)', border: OutlineInputBorder()),
                   validator: (val) => val == null || val.isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: 16),
@@ -92,7 +92,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                 TextFormField(
                   controller: _paidController,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Amount Paid Upfront (\$)', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(labelText: 'Amount Paid Upfront (\Tk)', border: OutlineInputBorder()),
                   validator: (val) => val == null || val.isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: 32),

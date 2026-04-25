@@ -44,8 +44,8 @@ class DashboardScreen extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 childAspectRatio: 1.3,
                 children: [
-                  _StatCard(title: 'Total Sales', value: '\$${service.totalSales.toStringAsFixed(2)}', icon: Icons.attach_money, color: Colors.green),
-                  _StatCard(title: 'Supplier Dues', value: '\$${service.supplierDues.toStringAsFixed(2)}', icon: Icons.money_off, color: Colors.redAccent),
+                  _StatCard(title: 'Total Sales', value: '\Tk ${service.totalSales.toStringAsFixed(2)}', icon: Icons.attach_money, color: Colors.green),
+                  _StatCard(title: 'Supplier Dues', value: '\Tk ${service.supplierDues.toStringAsFixed(2)}', icon: Icons.money_off, color: Colors.redAccent),
                   _StatCard(title: 'Total Items', value: service.totalItemsInInventory.toString(), icon: Icons.inventory_2, color: Colors.blue),
                   _StatCard(title: 'Low Stock Alerts', value: service.lowStockCount.toString(), icon: Icons.warning_amber_rounded, color: Colors.orange),
                 ],

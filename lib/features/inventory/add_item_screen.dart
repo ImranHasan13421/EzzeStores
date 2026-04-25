@@ -125,7 +125,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
             TextFormField(
               controller: _priceController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(labelText: 'Selling Price (\$)', border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: 'Selling Price (\Tk)', border: OutlineInputBorder()),
               validator: (val) => val == null || val.isEmpty ? 'Required' : null,
             ),
             const SizedBox(height: 16),

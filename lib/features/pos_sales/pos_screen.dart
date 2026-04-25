@@ -22,11 +22,11 @@ class PosScreen extends StatelessWidget {
               final item = service.cart[index];
               return ListTile(
                 title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text('Qty: ${item.quantity}  |  \$${item.price.toStringAsFixed(2)} each'),
+                subtitle: Text('Qty: ${item.quantity}  |  \Tk ${item.price.toStringAsFixed(2)} each'),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('\$${item.totalPrice.toStringAsFixed(2)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text('\Tk ${item.totalPrice.toStringAsFixed(2)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     IconButton(
                       icon: const Icon(Icons.delete_outline, color: Colors.red),
                       onPressed: () => service.removeItem(item.barcode),
@@ -54,7 +54,7 @@ class PosScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Total:', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                      Text('\$${service.cartTotal.toStringAsFixed(2)}',
+                      Text('\Tk ${service.cartTotal.toStringAsFixed(2)}',
                           style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.green)),
                     ],
                   ),
